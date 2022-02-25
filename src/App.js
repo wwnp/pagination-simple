@@ -1,25 +1,48 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from "react";
+import { Pagination, Container } from '@mui/material';
 
 function App() {
+  const [posts, setPosts] = useState([])
+  const [outPosts, setOutPosts] = useState([])
+  const [page, setPage] = useState(1)
+
+  useEffect(() => {
+    fetch('https://jsonplaceholder.typicode.com/todos')
+      .then(response => response.json())
+      .then(json => {
+        setPosts(json)
+      })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  useEffect(() => {
+    setOutPosts(posts.slice(page, page + 19))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, posts])
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+      <Container>
+        {
+          outPosts.length > 0
+            ? (
+              outPosts.map(i => {
+                return (
+                  <li key={i.id + i.title}>{i.title}</li>
+                )
+              })
+            )
+            : <h1>Loading...</h1>
+        }
+        <Pagination
+          count={posts.length / 20}
+          color="secondary"
+          page={page}
+          onChange={(_, num) => setPage(num)}
         >
-          Learn React
-        </a>
-      </header>
+        </Pagination>
+      </Container>
     </div>
   );
 }
-
 export default App;
