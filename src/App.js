@@ -1,11 +1,20 @@
 import { useEffect, useState } from "react";
 import { Pagination, Container } from '@mui/material';
+import { useNavigate } from 'react-router';
+import { useLocation, useParams } from 'react-router-dom';
+
+const PER_PAGE = 10
 
 function App() {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const params = useParams()
+
   const [posts, setPosts] = useState([])
   const [outPosts, setOutPosts] = useState([])
-  const [page, setPage] = useState(1)
+  const [page, setPage] = useState(+getPage(location.search))
 
+  console.log(page)
   useEffect(() => {
     fetch('https://jsonplaceholder.typicode.com/todos')
       .then(response => response.json())
@@ -15,8 +24,13 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+
   useEffect(() => {
-    setOutPosts(posts.slice(page, page + 19))
+
+    const indexLast = page * PER_PAGE
+    const indexFirst = indexLast - PER_PAGE
+    setOutPosts(posts.slice(indexFirst, indexLast))
+    navigate(`/?page=${page}`)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, posts])
 
@@ -28,7 +42,7 @@ function App() {
             ? (
               outPosts.map(i => {
                 return (
-                  <li key={i.id + i.title}>{i.title}</li>
+                  <li key={i.id + i.title}><b>{i.id}</b>  {i.title}</li>
                 )
               })
             )
@@ -46,3 +60,8 @@ function App() {
   );
 }
 export default App;
+
+function getPage(search) {
+  const temp = search.indexOf('page') + 5
+  return search.charAt(temp)
+}
