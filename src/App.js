@@ -8,17 +8,17 @@ const PER_PAGE = 10
 function App() {
   const navigate = useNavigate()
   const location = useLocation()
-  const params = useParams()
 
   const [posts, setPosts] = useState([])
   const [outPosts, setOutPosts] = useState([])
   const [page, setPage] = useState(+getPage(location.search))
 
-  console.log(page)
   useEffect(() => {
+    console.log(123)
     fetch('https://jsonplaceholder.typicode.com/todos')
       .then(response => response.json())
       .then(json => {
+        console.log(456)
         setPosts(json)
       })
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -26,7 +26,8 @@ function App() {
 
 
   useEffect(() => {
-
+    console.log(page)
+    console.log(789)
     const indexLast = page * PER_PAGE
     const indexFirst = indexLast - PER_PAGE
     setOutPosts(posts.slice(indexFirst, indexLast))
@@ -62,6 +63,10 @@ function App() {
 export default App;
 
 function getPage(search) {
+  console.log(search)
+  if(!search){
+    return 1
+  }
   const temp = search.indexOf('page') + 5
   return search.charAt(temp)
 }
